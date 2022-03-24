@@ -20,6 +20,10 @@
 
 static const char *TCP_TAG = "example";
 static const char *payload = "Message from ESP32 ";
+static const char at1[100] = "AT+REVERSE=\"seven\""; 
+static const char at2[100] = "AT+MULT=10,6"; 
+static const char at3[100] = "AT+SIZE=\"porsche\"";
+//static const char at_array[3][100] = {at1, at2, at3}; 
 
 void tcp_client_init();  //void *pvParameters
 

@@ -16,6 +16,11 @@ void tcp_client_init()
     int addr_family = 0;
     int ip_protocol = 0;
 
+    char char_array[3][100] = {0};
+    strcat(char_array[0], at1);
+    strcat(char_array[1], at2);
+    strcat(char_array[2], at3);
+
     while (1) {
 //#if defined(CONFIG_EXAMPLE_IPV4)
         struct sockaddr_in dest_addr;
@@ -50,27 +55,31 @@ void tcp_client_init()
         }
         ESP_LOGI(TCP_TAG, "Successfully connected");
 
-        while (1) {
-            int err = send(sock, payload, strlen(payload), 0);
-            if (err < 0) {
-                ESP_LOGE(TCP_TAG, "Error occurred during sending: errno %d", errno);
-                break;
-            }
+        while (1) 
+        {
+            for(int i = 0; i < 3; i++)
+            {
+                int err = send(sock, char_array[i], strlen(char_array[i]), 0);
+                if (err < 0) {
+                    ESP_LOGE(TCP_TAG, "Error occurred during sending: errno %d", errno);
+                    break;
+                }
 
-            int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
-            // Error occurred during receiving
-            if (len < 0) {
-                ESP_LOGE(TCP_TAG, "recv failed: errno %d", errno);
-                break;
-            }
-            // Data received
-            else {
-                rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
-                ESP_LOGI(TCP_TAG, "Received %d bytes from %s:", len, host_ip);
-                ESP_LOGI(TCP_TAG, "%s", rx_buffer);
-            }
+                int len = recv(sock, rx_buffer, sizeof(rx_buffer) - 1, 0);
+                // Error occurred during receiving
+                if (len < 0) {
+                    ESP_LOGE(TCP_TAG, "recv failed: errno %d", errno);
+                    break;
+                }
+                // Data received
+                else {
+                    rx_buffer[len] = 0; // Null-terminate whatever we received and treat like a string
+                    ESP_LOGI(TCP_TAG, "Received %d bytes from %s:", len, host_ip);
+                    ESP_LOGI(TCP_TAG, "%s", rx_buffer);
+                }
 
-            vTaskDelay(2000 / portTICK_PERIOD_MS);
+                vTaskDelay(200 / portTICK_PERIOD_MS);
+            }
         }
 
         if (sock != -1) {
